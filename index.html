@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Night Selector - Hollywood Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #b8860b 0%, #8b0000 50%, #b8860b 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fafafa;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border: 3px solid #b8860b;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #8b0000;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(184, 134, 11, 0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            font-style: italic;
+        }
+        
+        .roommate-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #b8860b;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .roommate-name {
+            font-weight: bold;
+            color: #8b0000;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .movie-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #daa520;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            background: #fffef5;
+        }
+        
+        .movie-input:focus {
+            outline: none;
+            border-color: #8b0000;
+            box-shadow: 0 0 5px rgba(139, 0, 0, 0.2);
+        }
+        
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 15px 25px;
+            border: 2px solid #b8860b;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        
+        .random-btn {
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+        }
+        
+        .random-btn:hover {
+            background: linear-gradient(135deg, #dc143c, #8b0000);
+        }
+        
+        .fair-btn {
+            background: linear-gradient(135deg, #b8860b, #ffd700);
+        }
+        
+        .fair-btn:hover {
+            background: linear-gradient(135deg, #ffd700, #b8860b);
+        }
+        
+        .compromise-btn {
+            background: linear-gradient(135deg, #8b0000, #b8860b);
+        }
+        
+        .compromise-btn:hover {
+            background: linear-gradient(135deg, #b8860b, #8b0000);
+        }
+        
+        .wildcard-btn {
+            background: linear-gradient(135deg, #daa520, #ff8c00);
+        }
+        
+        .wildcard-btn:hover {
+            background: linear-gradient(135deg, #ff8c00, #daa520);
+        }
+        
+        .reset-btn {
+            background: linear-gradient(135deg, #cd5c5c, #f08080);
+        }
+        
+        .reset-btn:hover {
+            background: linear-gradient(135deg, #f08080, #cd5c5c);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #fff8dc, #ffd70020);
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            animation: slideIn 0.5s ease;
+            border: 3px solid #b8860b;
+            box-shadow: 0 5px 20px rgba(184, 134, 11, 0.3);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-title {
+            font-size: 1.5em;
+            color: #8b0000;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(184, 134, 11, 0.3);
+        }
+        
+        .result-movie {
+            font-size: 1.8em;
+            color: #333;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        .result-reason {
+            color: #666;
+            font-style: italic;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #b8860b;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: linear-gradient(135deg, #fff8dc, #fffef5);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 1px solid #daa520;
+        }
+        
+        .stat-name {
+            font-weight: bold;
+            color: #8b0000;
+            font-size: 0.9em;
+        }
+        
+        .stat-count {
+            font-size: 1.5em;
+            color: #b8860b;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        
+        .emoji {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .hollywood-star {
+            color: #b8860b;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Movie Night Selector <span class="hollywood-star">⭐</span></h1>
+        <p class="subtitle">Stop debating, start watching!</p>
+        
+        <div class="roommate-section">
+            <div class="roommate-name">Morgan's Picks</div>
+            <input type="text" class="movie-input" id="morgan" 
+                   placeholder="Enter movies separated by commas" 
+                   value="Brokeback Mountain, Drive Away Dolls, Shrek, 16 Wishes, Princess and the Frog, Lyle Lyle Crocodile, Jennifer's Body, Cow Belles, The Edge of 17, Pride and Prejudice, The Help, The DUFF, Chicken Little, The Wizard of Oz">
+        </div>
+        
+        <div class="roommate-section">
+            <div class="roommate-name">Kaya's Picks</div>
+            <input type="text" class="movie-input" id="kaya" 
+                   placeholder="Enter movies separated by commas" 
+                   value="The Town, Forever My Girl, The Happening, Ratatouille">
+        </div>
+        
+        <div class="roommate-section">
+            <div class="roommate-name">Reggie's Picks</div>
+            <input type="text" class="movie-input" id="reggie" 
+                   placeholder="Enter movies separated by commas" 
+                   value="Enchanted, Princess Protection Program, Another Cinderella Story">
+        </div>
+        
+        <div class="roommate-section">
+            <div class="roommate-name">Chloe's Picks</div>
+            <input type="text" class="movie-input" id="chloe" 
+                   placeholder="Enter movies separated by commas" 
+                   value="Parasite, Prisoners, The Muppet Movie, Fight Club, Little Miss Sunshine, Perks of Being a Wallflower">
+        </div>
+        
+        <div class="button-container">
+            <button class="random-btn" onclick="randomPick()">
+                🎲 Random Pick
+            </button>
+            <button class="fair-btn" onclick="fairPick()">
+                ⚖️ Fair Turn Pick
+            </button>
+            <button class="compromise-btn" onclick="compromisePick()">
+                🤝 Compromise Pick
+            </button>
+            <button class="wildcard-btn" onclick="wildcardPick()">
+                ✨ Wildcard Suggestion
+            </button>
+            <button class="reset-btn" onclick="resetHistory()">
+                🔄 Reset History
+            </button>
+        </div>
+        
+        <div class="result" id="result">
+            <div class="emoji" id="result-emoji">🎬</div>
+            <div class="result-title" id="result-title">Tonight's Pick:</div>
+            <div class="result-movie" id="result-movie"></div>
+            <div class="result-reason" id="result-reason"></div>
+        </div>
+        
+        <div class="stats" id="stats" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-name">Morgan</div>
+                <div class="stat-count" id="morgan-count">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-name">Kaya</div>
+                <div class="stat-count" id="kaya-count">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-name">Reggie</div>
+                <div class="stat-count" id="reggie-count">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-name">Chloe</div>
+                <div class="stat-count" id="chloe-count">0</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Track selection history in memory (not localStorage for Claude artifacts)
+        let selectionHistory = {
+            morgan: 0,
+            kaya: 0,
+            reggie: 0,
+            chloe: 0
+        };
+        
+        function getMovies(roommate) {
+            const input = document.getElementById(roommate).value;
+            return input.split(',').map(movie => movie.trim()).filter(movie => movie);
+        }
+        
+        function getAllMovies() {
+            return {
+                morgan: getMovies('morgan'),
+                kaya: getMovies('kaya'),
+                reggie: getMovies('reggie'),
+                chloe: getMovies('chloe')
+            };
+        }
+        
+        function showResult(movie, person, reason, emoji = '🎬') {
+            const resultDiv = document.getElementById('result');
+            const resultMovie = document.getElementById('result-movie');
+            const resultReason = document.getElementById('result-reason');
+            const resultEmoji = document.getElementById('result-emoji');
+            
+            resultEmoji.textContent = emoji;
+            resultMovie.textContent = movie;
+            resultReason.textContent = reason;
+            resultDiv.style.display = 'block';
+            
+            // Update history
+            if (person && selectionHistory.hasOwnProperty(person)) {
+                selectionHistory[person]++;
+                updateStats();
+            }
+        }
+        
+        function updateStats() {
+            document.getElementById('stats').style.display = 'grid';
+            document.getElementById('morgan-count').textContent = selectionHistory.morgan;
+            document.getElementById('kaya-count').textContent = selectionHistory.kaya;
+            document.getElementById('reggie-count').textContent = selectionHistory.reggie;
+            document.getElementById('chloe-count').textContent = selectionHistory.chloe;
+        }
+        
+        function randomPick() {
+            const allMovies = getAllMovies();
+            const roommates = Object.keys(allMovies).filter(r => allMovies[r].length > 0);
+            
+            if (roommates.length === 0) {
+                showResult('No movies entered!', null, 'Please add some movie choices first.', '😅');
+                return;
+            }
+            
+            const randomRoommate = roommates[Math.floor(Math.random() * roommates.length)];
+            const movies = allMovies[randomRoommate];
+            const randomMovie = movies[Math.floor(Math.random() * movies.length)];
+            
+            showResult(
+                randomMovie, 
+                randomRoommate,
+                `Randomly selected from ${randomRoommate.charAt(0).toUpperCase() + randomRoommate.slice(1)}'s picks!`,
+                '🎲'
+            );
+        }
+        
+        function fairPick() {
+            const allMovies = getAllMovies();
+            const validRoommates = Object.keys(allMovies).filter(r => allMovies[r].length > 0);
+            
+            if (validRoommates.length === 0) {
+                showResult('No movies entered!', null, 'Please add some movie choices first.', '😅');
+                return;
+            }
+            
+            // Sort by who has been picked least
+            validRoommates.sort((a, b) => selectionHistory[a] - selectionHistory[b]);
+            const leastPicked = validRoommates[0];
+            const movies = allMovies[leastPicked];
+            const randomMovie = movies[Math.floor(Math.random() * movies.length)];
+            
+            showResult(
+                randomMovie,
+                leastPicked,
+                `It's ${leastPicked.charAt(0).toUpperCase() + leastPicked.slice(1)}'s turn! They've only been picked ${selectionHistory[leastPicked]} time(s).`,
+                '⚖️'
+            );
+        }
+        
+        function compromisePick() {
+            const compromiseMovies = [
+                // Original suggestions
+                { movie: "Everything Everywhere All At Once", reason: "Combines Chloe's mind-bending elements, Morgan's emotional depth, Reggie's whimsy, and Kaya's unexpected twists!" },
+                { movie: "Knives Out", reason: "Mystery that satisfies Chloe's clever plots, Kaya's crime elements, with ensemble charm everyone enjoys!" },
+                { movie: "Lady Bird", reason: "Coming-of-age that bridges Morgan's emotional stories and Chloe's indie sensibility!" },
+                { movie: "Promising Young Woman", reason: "Thriller with Morgan's female-focused narrative, Kaya's suspense, and Chloe's social commentary!" },
+                { movie: "The Grand Budapest Hotel", reason: "Whimsical enough for Reggie, clever enough for Chloe, emotional for Morgan, and suspenseful for Kaya!" },
+                { movie: "Paddington 2", reason: "Surprisingly perfect - has Reggie's charm, Morgan's heart, Chloe's clever construction, and Kaya's adventure!" },
+                { movie: "Scott Pilgrim vs. The World", reason: "Video game energy meets romance, action, and comedy - something for everyone!" },
+                { movie: "Hunt for the Wilderpeople", reason: "Adventure comedy with heart - balances everyone's different preferences perfectly!" },
+                
+                // New additions based on your group's tastes
+                { movie: "Barbie (2023)", reason: "Subversive comedy with Morgan's camp sensibility, Chloe's social commentary, and Reggie's pink fantasy world!" },
+                { movie: "Glass Onion", reason: "Mystery sequel with Kaya's twists, Chloe's clever writing, and ensemble cast drama Morgan loves!" },
+                { movie: "Cruella", reason: "Fashion-forward villain origin with Morgan's camp, Reggie's Disney connection, and Chloe's dark edge!" },
+                { movie: "The Menu", reason: "Dark satire combining Chloe's social critique, Kaya's thriller elements, and unexpected comedy!" },
+                { movie: "Tangled", reason: "Disney that works for everyone - Reggie's princess story, Morgan's humor, adventure for Kaya!" },
+                { movie: "Coraline", reason: "Animated but dark - bridges Reggie's family films with Chloe's psychological elements!" },
+                { movie: "Spirited Away", reason: "Magical realism that satisfies Reggie's fantasy, Chloe's artistic side, and Morgan's emotional depth!" },
+                { movie: "The Princess Bride", reason: "Classic that perfectly balances romance, adventure, comedy, and heart for all tastes!" },
+                { movie: "Jojo Rabbit", reason: "Dark comedy with heart - Chloe's satire meets Morgan's emotional storytelling!" },
+                { movie: "The Favourite", reason: "Period drama with Morgan's queer themes, Chloe's dark humor, and Kaya's intrigue!" },
+                { movie: "Legally Blonde", reason: "Feel-good that secretly satisfies everyone - smart, funny, pink, and empowering!" },
+                { movie: "Moonrise Kingdom", reason: "Wes Anderson's whimsy for Reggie, coming-of-age for Morgan, artistic for Chloe!" },
+                { movie: "Ocean's 8", reason: "Heist fun with female ensemble cast, satisfying Kaya's crime itch and Morgan's girl power!" },
+                { movie: "Birds of Prey", reason: "Colorful chaos mixing Morgan's female focus, Kaya's action, and Reggie's bright aesthetics!" },
+                { movie: "Crazy Rich Asians", reason: "Rom-com with enough drama for Kaya, romance for Reggie, and social commentary for Chloe!" }
+            ];
+            
+            const pick = compromiseMovies[Math.floor(Math.random() * compromiseMovies.length)];
+            showResult(pick.movie, null, pick.reason, '🤝');
+        }
+        
+        function wildcardPick() {
+            const wildcards = [
+                // Original wildcards
+                { movie: "The Fall (2006)", reason: "Visually stunning fantasy that nobody expects but everyone loves!" },
+                { movie: "Tucker and Dale vs. Evil", reason: "Horror-comedy that flips expectations - perfect for mixed tastes!" },
+                { movie: "Kiss Kiss Bang Bang", reason: "Shane Black's clever noir comedy - witty, thrilling, and unexpected!" },
+                { movie: "Stardust", reason: "Fantasy adventure with romance, humor, and adventure for all!" },
+                { movie: "Game Night", reason: "Comedy thriller that keeps everyone engaged and laughing!" },
+                { movie: "The Nice Guys", reason: "70s buddy cop comedy with mystery and amazing chemistry!" },
+                { movie: "Palm Springs", reason: "Time loop rom-com with depth - modern and crowd-pleasing!" },
+                { movie: "Booksmart", reason: "Modern coming-of-age comedy that's smart, funny, and heartfelt!" },
+                { movie: "The Mitchells vs. The Machines", reason: "Animated family adventure with humor and heart for everyone!" },
+                { movie: "Jumanji: Welcome to the Jungle", reason: "Adventure comedy reboot that's surprisingly entertaining!" },
+                
+                // New wildcards
+                { movie: "Bottoms", reason: "Queer high school fight club comedy - absolutely unhinged in the best way!" },
+                { movie: "The Lobster", reason: "Absurdist romance that's weird enough for Chloe, funny enough for everyone!" },
+                { movie: "Ready or Not", reason: "Horror-comedy about a deadly wedding game - surprisingly fun for all!" },
+                { movie: "Eurovision Song Contest", reason: "Will Ferrell comedy so sincere it circles back to brilliant!" },
+                { movie: "Thoroughbreds", reason: "Dark comedy thriller about teenage sociopaths - stylish and unexpected!" },
+                { movie: "The House", reason: "Stop-motion anthology that's creepy, beautiful, and totally unique!" },
+                { movie: "Marcel the Shell with Shoes On", reason: "Documentary-style film about a tiny shell - will make everyone cry happy tears!" },
+                { movie: "Bullet Train", reason: "Action comedy on a train - pure chaotic fun with surprising heart!" },
+                { movie: "The French Dispatch", reason: "Wes Anderson's love letter to journalism - visually stunning anthology!" },
+                { movie: "Shiva Baby", reason: "Anxiety-inducing comedy at a shiva - claustrophobic and hilarious!" },
+                { movie: "I, Tonya", reason: "Dark comedy about Tonya Harding - wild true story with incredible performances!" },
+                { movie: "Swiss Army Man", reason: "Daniel Radcliffe plays a farting corpse - bizarre but touching!" },
+                { movie: "Sorry to Bother You", reason: "Surrealist comedy about telemarketing that goes completely off the rails!" },
+                { movie: "Coherence", reason: "Mind-bending dinner party sci-fi - made for $50k and absolutely brilliant!" },
+                { movie: "What We Do in the Shadows", reason: "Vampire flatmate mockumentary - endlessly quotable!" },
+                { movie: "The Death of Stalin", reason: "Dark political comedy that's historically accurate and hilarious!" },
+                { movie: "Brigsby Bear", reason: "Weird, sweet comedy about a kids' show that shouldn't work but does!" },
+                { movie: "The Handmaiden", reason: "Korean thriller with twists, romance, and gorgeous cinematography!" },
+                { movie: "Under the Silver Lake", reason: "Neo-noir mystery that's either genius or insane - perfect debate fodder!" },
+                { movie: "Demolition Man", reason: "90s Stallone sci-fi that predicted our future hilariously wrong!" }
+            ];
+            
+            const pick = wildcards[Math.floor(Math.random() * wildcards.length)];
+            showResult(pick.movie, null, pick.reason, '✨');
+        }
+        
+        function resetHistory() {
+            selectionHistory = {
+                morgan: 0,
+                kaya: 0,
+                reggie: 0,
+                chloe: 0
+            };
+            updateStats();
+            showResult('History Reset!', null, 'Everyone starts fresh now!', '🔄');
+        }
+    </script>
+</body>
+</html>
